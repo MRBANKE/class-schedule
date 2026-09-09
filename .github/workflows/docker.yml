@@ -1,0 +1,64 @@
+# 打 tag(如 v1.0.0)时,自动构建多架构 Docker 镜像并推到
+# GitHub Container Registry:ghcr.io/mrbanke/class-schedule
+# (镜像名 class-schedule 与 GitHub 仓库名 MRBANKE/class-schedule 一致)
+#
+# 用户拉取:docker pull ghcr.io/mrbanke/class-schedule:latest
+name: Build and Publish Docker Image
+
+on:
+  push:
+    tags: ['v*']
+  # 也允许在 Actions 页手动触发一次
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # QEMU 提供跨架构模拟,arm64 就是靠它在 amd64 runner 上跑出来的
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # 根据 tag 自动生成镜像 tag:
+      #   v1.2.3 → 1.2.3 + 1.2 + latest
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          # 镜像名固定成 class-schedule,不用 ${{ github.repository }},
+          # 这样 GitHub 仓库名和镜像名可以各自独立(比如仓库改名不影响镜像地址)
+          images: ghcr.io/${{ github.repository_owner }}/class-schedule
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          # 覆盖大多数场景:x86_64 服务器 + ARM(树莓派/M1/M2 Mac)
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # 让下次构建复用缓存,加速
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
