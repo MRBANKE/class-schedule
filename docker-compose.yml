@@ -1,0 +1,52 @@
+services:
+  class-schedule:
+    # 默认从 GitHub Container Registry 拉预构建镜像(推荐,新用户不用装 build 工具链)。
+    # 想改成从源码本地构建,把下面的 image 注释掉、启用 build 段即可,或者直接
+    # `docker compose build` 覆盖同名 tag。
+    image: ghcr.io/mrbanke/class-schedule:latest
+    # build:
+    #   context: .
+    #   args:
+    #     # 国内网络较慢时改成下面两行,走国内镜像
+    #     # NPM_REGISTRY: https://registry.npmmirror.com
+    #     # NODE_IMAGE: docker.m.daocloud.io/library/node:22-alpine
+    #     NPM_REGISTRY: https://registry.npmjs.org
+    #     NODE_IMAGE: node:22-alpine
+    container_name: class-schedule
+    restart: unless-stopped
+    # no-new-privileges:降到 node 用户后再也拿不回权限。
+    # 端口 21873 > 1024,不需要 NET_BIND_SERVICE;丢掉全部 capability 再只加回
+    # entrypoint 必需的几个:CHOWN 改数据目录归属、SETUID/SETGID 降权到 node、
+    # DAC_OVERRIDE/FOWNER 让 root 能操作 bind-mount 进来的宿主属主目录。
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETUID
+      - SETGID
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    ports:
+      # 左边是宿主机端口(可改成你想要的,如 8080:21873)
+      - "21873:21873"
+    volumes:
+      # 全部数据(课表、备忘、附件、超管账号)都在这里,备份就是拷这个目录
+      - ./data:/app/data
+    environment:
+      TZ: Asia/Shanghai
+      # 对外访问的根地址(协议+域名+端口)。分享到微信/QQ 时卡片配图和链接要用绝对地址,
+      # 这里配成你实际访问的域名。留空则按请求头推断(反代后面可能不准)。
+      # PUBLIC_ORIGIN: "https://your-domain.example.com"
+      # 单个附件上限(MB),要传大视频就往上调
+      MAX_UPLOAD_MB: "512"
+      # 配置/备忘单次提交上限(MB)
+      MAX_JSON_MB: "64"
+      # 附件回收宽限期(小时):刚上传还没保存进备忘的附件,这段时间内不会被清掉
+      PRUNE_GRACE_HOURS: "6"

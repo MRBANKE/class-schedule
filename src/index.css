@@ -1,0 +1,193 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* 全站隐藏视觉滚动条,滚动能力(滚轮/触摸/键盘/scrollTo)不受影响。
+   之前 html 用 overflow-y:scroll + scrollbar-gutter:stable 常驻预留一条
+   经典滚动条槎位,但 100vw/100% 这类视口单位不会减去这段宽度,
+   于是贴着视口右边缘的元素(如 BoardApp 卡片描边)恰好被这条槎位挡住一部分,
+   Playwright 等无 overlay 滚动条的 Chromium 截图会看到右边缘被裁掉。
+   隐藏滚动条后不再占布局空间,这个问题随之消失 */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+html {
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* 禁止双击缩放、双指缩放,允许竖向滚动 */
+  touch-action: pan-y;
+  -ms-touch-action: pan-y;
+  /* 关闭 iOS 双击缩放 */
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  overflow-x: hidden;
+  /* 禁止移动端左右边界回弹和横向 overscroll */
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
+  -ms-touch-action: pan-y;
+}
+
+/* 看板页要求一屏铺满、不出现整页滚动;用 :has() 在挂载 .board-app 时
+   才锁 html/body 的滚动,不影响其它页面。iOS <16.4 不支持 :has(),
+   靠 BoardApp.tsx 挂载时手动加的 body.board-mode 类兜底 */
+html:has(.board-app),
+body:has(.board-app) {
+  overflow: hidden;
+}
+
+body.board-mode,
+body.board-mode #root,
+html:has(body.board-mode) {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+:root {
+  --bg: #f6f8fc;
+  --card-bg: #ffffff;
+  --card-border: rgba(15, 23, 42, 0.06);
+  --card-shadow: 0 10px 30px -18px rgba(15, 23, 42, 0.35);
+  --text: #1f2937;
+  --text-soft: #64748b;
+  --text-muted: #94a3b8;
+
+  --primary: #4c6ef5;
+  --primary-soft: #edf1ff;
+  --accent: #ff7a45;
+  --accent-soft: #fff1e6;
+  --success: #22c55e;
+
+  --joy: #ff6b9d;
+  --joy-soft: #ffe4ee;
+  --grass: #52c88e;
+  --grass-soft: #ddf7ea;
+  --sunshine: #f2b71b;
+  --sunshine-soft: #fff2c8;
+  --grape: #a97bf5;
+  --grape-soft: #f0e6ff;
+  /* 各色系的深阶,用于"角标叠在同色系底上"这类需要层次区分的场景。
+     取值对应经典色阶的 700 档,与主色(约 400/500 档)构成同色系深浅搭配 */
+  --sunshine-deep: #b45309;
+  --grape-deep: #6d28d9;
+  --sky: #4fb8f0;
+  --sky-soft: #d9f0ff;
+  --rose: #f43f5e;
+  --rose-soft: #ffe4ea;
+
+  font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: linear-gradient(160deg, #eaf1ff 0%, #f6f8fc 40%, #fff6ec 100%);
+}
+
+body:has(.admin-app) {
+  background:
+    radial-gradient(1200px 600px at 15% -10%, rgba(169, 123, 245, 0.18), transparent 60%),
+    radial-gradient(1000px 500px at 100% 0%, rgba(82, 200, 142, 0.15), transparent 60%),
+    radial-gradient(900px 500px at 50% 100%, rgba(255, 107, 157, 0.12), transparent 55%),
+    linear-gradient(180deg, #f6f8fc 0%, #f0f4fa 100%);
+  background-attachment: fixed;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  color: var(--text);
+}
+
+button {
+  font-family: inherit;
+}
+
+input,
+button {
+  font-size: 14px;
+}
+
+.boot-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+  color: var(--text);
+  background: linear-gradient(180deg, #f6f8fc 0%, #f0f4fa 100%);
+}
+
+.boot-spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid rgba(168, 85, 247, 0.2);
+  border-top-color: #a855f7;
+  animation: boot-spin 0.8s linear infinite;
+}
+
+@keyframes boot-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.boot-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.boot-text {
+  font-size: 14px;
+  color: var(--text-muted, #666);
+  margin: 0;
+  max-width: 360px;
+}
+
+.boot-hint {
+  font-size: 12px;
+  color: var(--text-muted, #999);
+  margin: 0;
+  max-width: 360px;
+  line-height: 1.6;
+}
+
+.boot-retry {
+  margin-top: 8px;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 999px;
+  background: #a855f7;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}

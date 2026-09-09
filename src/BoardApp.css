@@ -1,0 +1,1625 @@
+.board-app {
+  /* 用 100% 而非 100vw:100vw 不减去滚动条宽度,会让右边界伸到滚动条下面
+     导致右描边被裁;100% 基于 body 可用宽度,天然规避 */
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  padding: clamp(10px, 1.6vmin, 22px) clamp(12px, 1.8vmin, 26px);
+  color: #1e293b;
+  background: #f6f8fc;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.2vmin, 16px);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(8px, 1.4vmin, 16px);
+  padding: clamp(10px, 1.4vmin, 20px) clamp(12px, 1.6vmin, 22px);
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 12px 32px -20px rgba(15, 23, 42, 0.18);
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.board-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.board-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(40px, 5.5vmin, 60px);
+  height: clamp(40px, 5.5vmin, 60px);
+  border-radius: 16px;
+  overflow: hidden;
+  background: #eef3ff;
+  color: #4c6ef5;
+  flex-shrink: 0;
+}
+
+.board-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.board-title-text {
+  min-width: 0;
+}
+
+.board-title-text h1 {
+  margin: 0;
+  font-size: clamp(16px, 3vmin, 40px);
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.board-title-text p {
+  margin: 4px 0 0;
+  color: #64748b;
+  /* 标题下的日期(2026年9月9日星期三)适度加大,抬高下限保证手机上也变大 */
+  font-size: clamp(15px, 2.4vmin, 22px);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.board-title-text p svg {
+  color: #4c6ef5;
+}
+
+.board-title-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #f0e6ff;
+  color: #7d4bd8;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.4px;
+  margin-left: 4px;
+}
+
+.board-clock {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(6px, 1vmin, 12px);
+  padding: clamp(6px, 1vmin, 10px) clamp(10px, 1.6vmin, 22px);
+  border-radius: 16px;
+  background: #eef3ff;
+  color: #4c6ef5;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, Consolas, monospace;
+  border: 1px solid rgba(76, 110, 245, 0.2);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.board-clock-label {
+  font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: clamp(10px, 1.4vmin, 13px);
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: rgba(76, 110, 245, 0.7);
+  border-left: 1px solid rgba(76, 110, 245, 0.25);
+  padding-left: clamp(6px, 1vmin, 12px);
+  white-space: nowrap;
+}
+
+.board-clock-time {
+  /* 这是"更新时间"胶囊,属次要信息,保持较小、不喧宾夺主 */
+  font-size: clamp(16px, 2.8vmin, 34px);
+  letter-spacing: 1.2px;
+  white-space: nowrap;
+}
+
+.board-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+  gap: clamp(8px, 1.4vmin, 16px);
+  min-height: 0;
+  min-width: 0;
+}
+
+.board-main-no-side {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.board-panel {
+  position: relative;
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  padding: clamp(10px, 1.4vmin, 20px) clamp(12px, 1.6vmin, 24px);
+  box-shadow: 0 12px 32px -22px rgba(15, 23, 42, 0.18);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(6px, 0.9vmin, 12px);
+  min-height: 0;
+  min-width: 0;
+}
+
+.board-panel-title {
+  margin: 0 0 4px;
+  font-size: clamp(15px, 2.6vmin, 26px);
+  font-weight: 700;
+  color: #1e293b;
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(6px, 1vmin, 10px);
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.board-panel-title svg {
+  color: #4c6ef5;
+}
+
+.board-empty {
+  margin: 0;
+  padding: 24px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.board-panel-schedule {
+  min-height: 0;
+  flex: 1;
+}
+
+.board-schedule-columns {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  /* 上午/下午强制双列,让手机竖屏也能左右并排展示;字号已 clamp 收紧,窄屏也能塞下 */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(6px, 1vmin, 14px);
+}
+
+.board-schedule-col {
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.board-schedule-col-title {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(6px, 1vmin, 10px);
+  padding: clamp(3px, 0.7vmin, 6px) clamp(8px, 1.4vmin, 14px);
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(76, 110, 245, 0.08) 0%,
+    rgba(169, 123, 245, 0.08) 100%
+  );
+  color: #4c6ef5;
+  font-size: clamp(13px, 2.1vmin, 24px);
+  font-weight: 800;
+  letter-spacing: 3px;
+  align-self: flex-start;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.board-schedule-col-title-pm {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 122, 69, 0.1) 0%,
+    rgba(255, 92, 138, 0.1) 100%
+  );
+  color: #d0552a;
+}
+
+.board-schedule-col-title svg {
+  color: currentColor;
+  width: clamp(14px, 2vmin, 22px);
+  height: clamp(14px, 2vmin, 22px);
+}
+
+.board-schedule-col-title em {
+  font-style: normal;
+  color: rgba(76, 110, 245, 0.7);
+  font-weight: 700;
+  /* "X 节"与"上午/下午"主标题保持同一字号,视觉更饱满 */
+  font-size: clamp(13px, 2.1vmin, 24px);
+  letter-spacing: 0.4px;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+.board-schedule-col-title-pm em {
+  color: rgba(208, 85, 42, 0.7);
+}
+
+.board-schedule {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-auto-rows: minmax(0, 1fr);
+  gap: clamp(4px, 0.7vmin, 10px);
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+  /* 作为 container:根据 chip 列宽决定内部课程行是横排还是竖排 */
+  container-type: inline-size;
+  container-name: schedcol;
+}
+
+.board-schedule > li {
+  flex: 1 1 auto;
+  /* 用 clamp 让窄屏也能塞下 4 节课程,大屏保持视觉舒适 */
+  min-height: clamp(30px, 6vmin, 64px);
+}
+
+.board-schedule-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+  border-radius: 12px;
+  border: 1px dashed rgba(148, 163, 184, 0.4);
+  background: rgba(15, 23, 42, 0.02);
+}
+
+.board-schedule-item {
+  display: grid;
+  grid-template-columns: minmax(56px, auto) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(6px, 1vmin, 14px);
+  padding: clamp(4px, 0.8vmin, 10px) clamp(12px, 1.6vmin, 18px);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  /* 微妙的 inset 高光 + 外阴影,让 chip 有轻立体感,不喧宾夺主 */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0 rgba(15, 23, 42, 0.04),
+    0 2px 6px -3px rgba(15, 23, 42, 0.12);
+  transition: box-shadow 0.2s ease;
+}
+
+.board-schedule-item:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(15, 23, 42, 0.05),
+    0 6px 14px -6px rgba(15, 23, 42, 0.2);
+}
+
+.board-schedule-item-active {
+  /* 用 inset 描边:父级 .board-panel 有 overflow:hidden,外描边会被裁剪不完整;
+     inset 在自身内圈绘制,永远不会被父容器裁掉,四周描边始终闭合 */
+  box-shadow: inset 0 0 0 2px rgba(30, 41, 59, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 6px 16px -8px rgba(15, 23, 42, 0.25);
+  transform: translateZ(0);
+}
+
+.board-schedule-period {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+}
+
+/* 节次标签:纯文字,与课程名做字重/色深/字距层次区分,不加任何装饰 */
+.board-schedule-label {
+  /* "第 X 节"字号加大一档,与课程名更接近层级 */
+  font-size: clamp(14px, 2.6vmin, 28px);
+  font-weight: 600;
+  color: rgba(30, 41, 59, 0.6);
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.board-schedule-time {
+  font-size: 11.5px;
+  color: rgba(30, 41, 59, 0.6);
+  font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, Consolas, monospace;
+  letter-spacing: 0.4px;
+}
+
+.board-schedule-subject {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 1vmin, 12px);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.board-schedule-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(32px, 4.5vmin, 56px);
+  height: clamp(32px, 4.5vmin, 56px);
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.7) 100%
+  );
+  color: #3c485c;
+  flex-shrink: 0;
+  box-shadow: 0 2px 5px -2px rgba(15, 23, 42, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+}
+
+.board-schedule-icon svg {
+  width: clamp(18px, 2.8vmin, 30px);
+  height: clamp(18px, 2.8vmin, 30px);
+}
+
+.board-schedule-content {
+  min-width: 0;
+  flex: 1 1 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  overflow: hidden;
+}
+
+.board-schedule-name {
+  font-size: clamp(15px, 3vmin, 36px);
+  font-weight: 800;
+  color: #1e293b;
+  letter-spacing: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: keep-all;
+  min-width: 0;
+  max-width: 100%;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.board-schedule-reminder {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13.5px;
+  color: rgba(30, 41, 59, 0.62);
+  background: rgba(255, 255, 255, 0.65);
+  padding: 3px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.2px;
+  white-space: normal;
+  min-width: 0;
+  max-width: 100%;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.board-schedule-reminder > span {
+  min-width: 0;
+}
+
+.board-schedule-reminder svg {
+  color: rgba(30, 41, 59, 0.55);
+  flex-shrink: 0;
+}
+
+/* 当前节次:课程名 + 备注上下排列,badge 依然靠右;避免 name/reminder 被挤压变形 */
+.board-schedule-item-active .board-schedule-content {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.board-schedule-item-active .board-schedule-reminder {
+  max-width: 100%;
+}
+
+.board-schedule-badge {
+  margin-left: auto;
+  padding: 3px clamp(6px, 1.2vmin, 12px);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff7a45 0%, #ff5c8a 100%);
+  color: #fff;
+  font-size: clamp(10px, 1.4vmin, 13px);
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.board-side {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.2vmin, 14px);
+  min-height: 0;
+  min-width: 0;
+}
+
+.board-panel-weather {
+  gap: 10px;
+}
+
+.board-weather-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.board-skeleton {
+  height: 14px;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    rgba(148, 163, 184, 0.18) 0%,
+    rgba(148, 163, 184, 0.32) 40%,
+    rgba(148, 163, 184, 0.18) 80%
+  );
+  animation: boardShimmer 1.4s infinite linear;
+}
+
+.board-skeleton-lg { height: 40px; }
+.board-skeleton-sm { width: 60%; }
+
+@keyframes boardShimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+.board-weather-main {
+  display: grid;
+  /* stats 至少 60px,不够时让 primary 收缩,配合内部 container query 隐藏胶囊 */
+  grid-template-columns: minmax(0, auto) minmax(60px, 1fr);
+  align-items: stretch;
+  gap: clamp(8px, 1.4vmin, 16px);
+  color: #4c6ef5;
+}
+
+.board-weather-primary {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 1.2vmin, 12px);
+  min-width: 0;
+}
+
+.board-weather-primary > svg {
+  width: clamp(44px, 8vmin, 80px);
+  height: clamp(44px, 8vmin, 80px);
+  flex-shrink: 0;
+}
+
+.board-weather-stats {
+  /* flex 让剩余胶囊自动平分空间(JS 根据 stats 宽度控制显示几个胶囊) */
+  display: flex;
+  flex-wrap: nowrap;
+  gap: clamp(4px, 0.9vmin, 8px);
+  min-width: 0;
+}
+
+.board-weather-stat {
+  flex: 1 1 0;
+}
+
+.board-weather-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: clamp(4px, 0.9vmin, 10px) clamp(3px, 0.8vmin, 6px);
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(76, 110, 245, 0.06) 0%,
+    rgba(169, 123, 245, 0.06) 100%
+  );
+  border: 1px solid rgba(76, 110, 245, 0.14);
+  text-align: center;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.board-weather-stat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #4c6ef5;
+}
+
+.board-weather-stat-label {
+  /* 湿度/体感/风力 标签字号加大一档,与数值层级更呼应 */
+  font-size: clamp(15px, 2.8vmin, 24px);
+  color: #64748b;
+  letter-spacing: 0.4px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.board-weather-stat-value {
+  /* 天气胶囊内数值(64% / 23℃ / 微风)大幅加大,大屏显得更饱满;
+     word-break: keep-all 防"微风"拆行,配合 nowrap + ellipsis 兜底 */
+  font-size: clamp(22px, 4vmin, 40px);
+  color: #1e293b;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  line-height: 1.2;
+  word-break: keep-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  text-align: center;
+}
+
+.board-weather-temp {
+  display: inline-flex;
+  align-items: baseline;
+  color: #1e293b;
+}
+
+.board-weather-num {
+  font-size: clamp(32px, 6vmin, 72px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.board-weather-unit {
+  font-size: clamp(14px, 2.6vmin, 28px);
+  font-weight: 700;
+  margin-left: 3px;
+  white-space: nowrap;
+}
+
+.board-weather-desc {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.board-weather-range {
+  font-size: 14.5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.board-weather-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.board-weather-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.board-weather-meta svg {
+  color: #4c6ef5;
+}
+
+.board-forecast {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(15, 23, 42, 0.1);
+}
+
+.board-forecast-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.board-forecast-day {
+  color: #64748b;
+  letter-spacing: 0.3px;
+  /* 明天/后天/周六… 星期标签随温度一起适度加大 */
+  font-size: clamp(15px, 2.2vmin, 18px);
+}
+
+.board-forecast-item svg {
+  color: #4c6ef5;
+}
+
+.board-forecast-temp {
+  color: #1e293b;
+  font-weight: 700;
+  /* 4 天预报的温度数字适度加大(原先继承 14px,现给独立的可缩放字号) */
+  font-size: clamp(16px, 2.6vmin, 22px);
+}
+
+.board-forecast-temp span {
+  color: #94a3b8;
+  font-weight: 400;
+  margin-left: 2px;
+}
+
+.board-panel-memo {
+  flex: 1;
+  min-height: 0;
+}
+
+.board-memo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 0.6vmin, 8px);
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+}
+
+/* 溢出提示:显示"还有 N 条" */
+.board-memo-more {
+  flex-shrink: 0;
+  padding: 6px 4px 0;
+  color: var(--text-muted, #94a3b8);
+  font-size: clamp(11px, 1.4vmin, 13px);
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.board-memo-item {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.04);
+}
+
+/* body 至少 60% 宽度,不足时胶囊组自动换到下一行右对齐 */
+.board-memo-item > .board-memo-body {
+  flex: 1 1 60%;
+}
+
+.board-memo-item-overdue {
+  background: rgba(255, 107, 157, 0.12);
+}
+
+.board-memo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #4c6ef5;
+  margin-top: 6px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.15);
+}
+
+.board-memo-item-overdue .board-memo-dot {
+  background: #d94a7b;
+  box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.2);
+}
+
+.board-memo-body {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* 右侧胶囊组:时间 + 附件类型;按内容自然宽度,body 才能吃满剩余空间。
+   胶囊过多需要换行时,由 board-memo-item 的 flex-wrap 承担 */
+.board-memo-chips {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  margin-left: auto;
+  margin-top: 2px;
+}
+
+.board-memo-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.board-memo-chip em {
+  font-style: normal;
+  font-size: 10.5px;
+  padding-left: 3px;
+  border-left: 1px solid currentColor;
+  margin-left: 2px;
+  opacity: 0.7;
+}
+
+.board-memo-chip-image {
+  background: rgba(76, 110, 245, 0.14);
+  color: #4c6ef5;
+}
+
+.board-memo-chip-video {
+  background: rgba(244, 63, 94, 0.14);
+  color: #c02948;
+}
+
+.board-memo-chip-audio {
+  background: rgba(169, 123, 245, 0.16);
+  color: #7d4bd8;
+}
+
+.board-memo-chip-file {
+  background: rgba(23, 145, 90, 0.14);
+  color: #17915a;
+}
+
+/* 时间胶囊:未逾期用 sunshine 暖色,逾期用 rose 强调 */
+.board-memo-chip-time {
+  background: rgba(242, 183, 27, 0.16);
+  color: #a37605;
+}
+
+.board-memo-chip-time-overdue {
+  background: rgba(244, 63, 94, 0.16);
+  color: #c02948;
+  font-weight: 600;
+}
+
+.board-memo-text {
+  font-size: 16px;
+  color: #1e293b;
+  font-weight: 500;
+  line-height: 1.4;
+  /* 连续英文/数字必须能被强制换行,否则会撑破 body 与右侧胶囊重叠 */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
+}
+
+.board-footer {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  padding: 8px 0 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  align-self: center;
+}
+
+.board-footer-sep {
+  opacity: 0.6;
+}
+
+/* ==========
+   Responsive:让任何屏幕比例都能完整显示
+   ========== */
+
+/* ================================
+   响应式:按 max-width 分档,同时兼顾 landscape/portrait 时的合理排版
+   playwright/devtools 只调宽度即可切换布局
+   ================================ */
+
+/* 中等宽屏(≤1280):侧栏收窄一档 */
+@media (max-width: 1280px) {
+  .board-main {
+    grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr);
+  }
+}
+
+/* 窄横屏(≤960 且横屏):侧栏更窄,课程 morning/afternoon 合并单列 */
+@media (max-width: 960px) and (orientation: landscape) {
+  .board-main {
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  }
+  .board-schedule-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 窄屏(≤900):主区在上、侧栏(天气+备忘)在下并排。
+   课程保持上午/下午双列排布,压缩到一屏的同时给备忘留出高度 */
+@media (max-width: 900px) {
+  .board-main {
+    grid-template-columns: minmax(0, 1fr);
+    /* 主区 : 侧栏 = 1.7 : 1,课程双列后仍是内容主体,天气+备忘缩短占约 1/3 屏 */
+    grid-template-rows: minmax(0, 1.7fr) minmax(0, 1fr);
+  }
+  .board-side {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  }
+  /* 课程仍双列;更窄的手机屏由 640 断点合并为单列 */
+  .board-schedule-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 超宽屏:限最大宽度 */
+@media (min-width: 1920px) {
+  .board-app {
+    max-width: 2400px;
+    margin: 0 auto;
+  }
+}
+
+/* ---- 分级删减:按屏幕越来越小,依次隐藏次要元素 ---- */
+
+/* Level 1 · 更窄或更短屏:才删课程备注 + 天气描述行 */
+@media (max-width: 780px), (max-height: 500px) {
+  .board-schedule-reminder,
+  .board-weather-desc {
+    display: none;
+  }
+}
+
+/* Level 2 · 极窄或极短:才删 5 天预报 */
+@media (max-width: 320px), (max-height: 340px) {
+  .board-forecast {
+    display: none;
+  }
+}
+
+/* 手机端(≤640):看板保持一屏完整显示,不滚动,内容按 flex 均分自动缩放。
+   显式声明 landscape 分支避免和"窄屏"规则冲突 */
+@media (max-width: 640px) {
+  .board-app {
+    /* 保持锁定视口高度,不出现整页滚动 */
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    padding-top: 20px;
+  }
+  /* 课程仍保持上午/下午左右两列;更窄的极小屏由 360 断点合并为单列 */
+  .board-schedule-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* board-side 用 display: contents,让子 panel 直接进入 board-main flex 布局,
+     配合 flex 均分把整屏纵向空间分给三块 */
+  .board-main {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(6px, 1.2vmin, 12px);
+    grid-template-columns: none;
+    grid-template-rows: none;
+    min-height: 0;
+    flex: 1;
+  }
+  .board-side {
+    display: contents;
+  }
+  /* 天气 → 课程 → 备忘 的显示顺序;天气和备忘各设 max-height,防止内容多时
+     挤压课程可视区域 */
+  .board-panel-weather {
+    order: 1;
+    flex: 0 1 auto;
+    max-height: 34vh;
+  }
+  .board-panel-schedule {
+    order: 2;
+    flex: 1 1 0;
+    min-height: 0;
+  }
+  .board-panel-memo {
+    order: 3;
+    flex: 0 1 auto;
+    min-height: 0;
+    max-height: 30vh;
+  }
+  /* 面板内部允许收缩,单个卡片内部滚动交给自身,不撑破整屏 */
+  .board-panel {
+    overflow: hidden;
+    min-height: 0;
+  }
+  .board-schedule {
+    grid-auto-rows: minmax(0, 1fr);
+    overflow: hidden;
+  }
+  .board-weather-main {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: clamp(8px, 1.6vmin, 14px);
+    align-items: center;
+  }
+  .board-memo-list {
+    /* 备忘条超出时仅在该卡片内滚,不出现整屏滚动 */
+    overflow: auto;
+  }
+}
+
+/* Level 2 · 更小:删除"更新时间"文字标签、单双周徽章 */
+@media (max-width: 820px), (max-height: 520px) {
+  .board-clock-label {
+    display: none;
+  }
+  .board-title-tag {
+    display: none;
+  }
+}
+
+/* Level 3 · 手机窄屏:去掉课程/天气各种 icon,把腾出空间给文字,内容更饱满 */
+@media (max-width: 560px), (max-height: 480px) {
+  /* 课程行 icon */
+  .board-schedule-icon {
+    display: none;
+  }
+  /* 天气主区保持左右布局:太阳 icon+温度 在左,三胶囊(带 icon)在右,与 PC 一致 */
+  .board-weather-main {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: clamp(6px, 1.4vmin, 12px);
+    align-items: center;
+  }
+  /* 头像和日期次要 */
+  .board-title-text p {
+    display: none;
+  }
+  /* 课程行竖排:第X节顶部居中 + 课程名与状态并排居中 */
+  .board-schedule-item {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: 1px;
+    padding: clamp(4px, 1vmin, 8px) clamp(8px, 1.4vmin, 12px);
+  }
+  .board-schedule-period {
+    align-items: center;
+    text-align: center;
+  }
+  .board-schedule-label {
+    text-align: center;
+    font-size: clamp(16px, 3vmin, 22px);
+    font-weight: 800;
+    letter-spacing: 1px;
+  }
+  .board-schedule-subject {
+    justify-content: center;
+    gap: clamp(6px, 1.4vmin, 12px);
+  }
+  .board-schedule-content {
+    justify-content: center;
+    text-align: center;
+    flex: 0 1 auto;
+  }
+  .board-schedule-name {
+    font-size: clamp(17px, 3.2vmin, 24px);
+    text-align: center;
+    font-weight: 800;
+  }
+  /* 状态 badge 紧跟在课程名旁,居中排列 */
+  .board-schedule-badge {
+    font-size: clamp(11px, 1.7vmin, 13px);
+    padding: 2px 9px;
+    margin-left: 0;
+  }
+  /* 天气数字更醒目 */
+  .board-weather-num {
+    font-size: clamp(32px, 6.5vmin, 52px);
+  }
+  .board-weather-stat-label {
+    font-size: clamp(14px, 2.4vmin, 18px);
+  }
+  .board-weather-stat-value {
+    font-size: clamp(20px, 3.4vmin, 30px);
+  }
+  /* 各 panel 内边距小一点,减少空白 */
+  .board-panel {
+    padding: clamp(10px, 1.8vmin, 16px) clamp(12px, 2.2vmin, 18px);
+    gap: clamp(6px, 1vmin, 10px);
+  }
+}
+
+/* Level 4 · 手机极窄或极短:"上午/下午"col 标题、头像、时钟 icon 隐藏,
+   同时课程合并为单列(极小屏 320px 双列会挤到无法阅读) */
+@media (max-width: 360px), (max-height: 340px) {
+  .board-schedule-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .board-schedule-col-title {
+    display: none;
+  }
+  .board-logo {
+    display: none;
+  }
+  .board-clock svg {
+    display: none;
+  }
+}
+
+/* ==========================================================
+   Container query:课程 chip 列宽 < 280px 时自动竖排,
+   第X节顶部居中,课程名与"正在上课"badge 在下一行居中排列
+   ========================================================== */
+@container schedcol (max-width: 280px) {
+  .board-schedule-item {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: 0;
+    padding: clamp(3px, 0.7vmin, 6px) clamp(6px, 1.2vmin, 10px);
+  }
+  .board-schedule-period {
+    align-items: center;
+    text-align: center;
+  }
+  .board-schedule-label {
+    text-align: center;
+    font-size: clamp(14px, 2.5vmin, 20px);
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: rgba(30, 41, 59, 0.7);
+  }
+  .board-schedule-subject {
+    justify-content: center;
+    gap: clamp(6px, 1.4vmin, 12px);
+  }
+  .board-schedule-icon {
+    display: none;
+  }
+  .board-schedule-content {
+    justify-content: center;
+    text-align: center;
+    flex: 0 1 auto;
+  }
+  .board-schedule-name {
+    font-size: clamp(20px, 4vmin, 32px);
+    text-align: center;
+    font-weight: 800;
+    letter-spacing: 2px;
+  }
+  .board-schedule-badge {
+    font-size: clamp(11px, 1.7vmin, 13px);
+    padding: 2px 9px;
+    margin-left: 0;
+  }
+  /* 竖排下当前节次隐藏 reminder,避免又被压小 */
+  .board-schedule-item .board-schedule-reminder {
+    display: none;
+  }
+}
+
+/* E-ink / 高对比度 / 减少动画 */
+@media (prefers-reduced-motion: reduce) {
+  .board-skeleton {
+    animation: none;
+  }
+}
+
+/* =====================================================
+   风格一(彩色版)· 装饰渐变:与 PC 主页各卡片一致
+   header 渐变底 + 每个 panel 右上角径向色晕
+   ===================================================== */
+
+/* Header:蓝紫粉三段渐变,与 PC .app-header 一致 */
+.board-app-default .board-header {
+  background: linear-gradient(
+    135deg,
+    rgba(238, 243, 255, 0.9) 0%,
+    rgba(245, 234, 255, 0.9) 55%,
+    rgba(255, 242, 226, 0.9) 100%
+  );
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 20px 40px -25px rgba(76, 110, 245, 0.25);
+}
+
+/* Panel 通用:右上角装饰色晕(240x240 径向渐变)*/
+.board-app-default .board-panel::before {
+  content: '';
+  position: absolute;
+  top: -70px;
+  right: -70px;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.board-app-default .board-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* 课程模块:绿色系(与 PC .today-card 一致) */
+.board-app-default .board-panel-schedule::before {
+  background: radial-gradient(
+    closest-side,
+    rgba(82, 200, 142, 0.16) 0%,
+    transparent 100%
+  );
+}
+
+/* 天气模块:黄色系(与 PC .weather-card 一致) */
+.board-app-default .board-panel-weather::before {
+  background: radial-gradient(
+    closest-side,
+    rgba(242, 183, 27, 0.16) 0%,
+    transparent 100%
+  );
+}
+
+/* 备忘模块:橙色 + 蓝色双色晕(与 PC .memo-card 一致) */
+.board-app-default .board-panel-memo::before {
+  top: -60px;
+  right: -60px;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 122, 69, 0.12) 0%,
+    transparent 100%
+  );
+}
+.board-app-default .board-panel-memo::after {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  left: -60px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(76, 110, 245, 0.1) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+
+/* =====================================================
+   风格二 · 墨水屏(4/6 色)
+   色板:黑 #000 / 白 #fff / 红 #c0272d / 黄 #d8a613 /
+        蓝 #1e46a4 / 绿 #1a7f3c
+   所有卡片:纯白底 + 黑 1.5px 描边,不用渐变阴影
+   ===================================================== */
+
+.board-app-ink {
+  --ink-black: #000;
+  --ink-white: #ffffff;
+  --ink-red: #c0272d;
+  --ink-yellow: #d8a613;
+  --ink-blue: #1e46a4;
+  --ink-green: #1a7f3c;
+  --ink-border: #000;
+  --ink-mute: #555;
+  background: #ffffff;
+  color: var(--ink-black);
+  /* 仅墨水屏使用内置的思源黑体可变字体:墨水屏浏览器系统字体往往缺失或粗细单一,
+     统一字形保证换机后字重/字形一致。普通设备(手机/电脑)不受影响,仍用系统字体。
+     此处是全站唯一引用 Noto Sans SC Variable 的地方,故该字体只在渲染墨水屏时下载。 */
+  font-family: 'Noto Sans SC Variable', 'PingFang SC', 'Microsoft YaHei',
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* 墨水屏侧栏和默认一致:天气/备忘并排 */
+.board-app-ink .board-side {
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+}
+
+.board-app-ink .board-header,
+.board-app-ink .board-panel {
+  background: var(--ink-white) !important;
+  border: 2.5px solid var(--ink-border);
+  border-radius: 14px;
+  box-shadow: none;
+}
+
+.board-app-ink .board-header::before,
+.board-app-ink .board-header::after,
+.board-app-ink .board-panel::before,
+.board-app-ink .board-panel::after {
+  display: none !important;
+}
+
+.board-app-ink .board-title-text h1,
+.board-app-ink .board-panel-title,
+.board-app-ink .board-schedule-name,
+.board-app-ink .board-schedule-label,
+.board-app-ink .board-weather-num,
+.board-app-ink .board-weather-desc,
+.board-app-ink .board-memo-text {
+  color: var(--ink-black);
+}
+
+.board-app-ink .board-title-text p,
+.board-app-ink .board-weather-meta,
+.board-app-ink .board-forecast-day,
+.board-app-ink .board-schedule-col-title em,
+.board-app-ink .board-schedule-reminder,
+.board-app-ink .board-forecast-temp span {
+  color: var(--ink-mute);
+}
+
+.board-app-ink .board-title-text p svg,
+.board-app-ink .board-panel-title svg,
+.board-app-ink .board-weather-main,
+.board-app-ink .board-weather-meta svg,
+.board-app-ink .board-forecast-item svg {
+  color: var(--ink-blue);
+}
+
+.board-app-ink .board-logo {
+  background: var(--ink-white);
+  color: var(--ink-blue);
+  border: 2.5px solid var(--ink-border);
+  border-radius: 12px;
+}
+
+.board-app-ink .board-title-tag {
+  background: var(--ink-white);
+  color: var(--ink-red);
+  border: 2.2px solid var(--ink-red);
+  padding: 2px 8px;
+}
+
+.board-app-ink .board-clock {
+  background: var(--ink-white);
+  color: var(--ink-blue);
+  border: 2.5px solid var(--ink-border);
+}
+
+.board-app-ink .board-clock-label {
+  color: var(--ink-mute);
+  border-left-color: rgba(0, 0, 0, 0.25);
+}
+
+.board-app-ink .board-schedule-col-title {
+  background: var(--ink-white);
+  color: var(--ink-blue);
+  border: 2.5px solid var(--ink-blue);
+}
+
+.board-app-ink .board-schedule-col-title-pm {
+  color: var(--ink-red);
+  border-color: var(--ink-red);
+}
+
+.board-app-ink .board-schedule-col-title-pm em {
+  color: var(--ink-red);
+}
+
+.board-app-ink .board-schedule-col-title svg {
+  color: currentColor;
+}
+
+.board-app-ink .board-schedule-item {
+  background: var(--ink-white) !important;
+  border: 2.5px solid var(--ink-border);
+  color: var(--ink-black);
+  box-shadow: none;
+}
+
+.board-app-ink .board-schedule-item:hover {
+  box-shadow: none;
+}
+
+.board-app-ink .board-schedule-item-active {
+  border-color: var(--ink-red);
+  border-width: 3.5px;
+  box-shadow: none;
+}
+
+/* 墨水屏节次标签:黑字 */
+.board-app-ink .board-schedule-label {
+  color: var(--ink-black);
+  text-shadow: none;
+}
+
+/* 墨水屏 icon 容器保持纯白 + 硬边 */
+.board-app-ink .board-schedule-icon {
+  background: var(--ink-white);
+  border: 2.2px solid var(--ink-border);
+  box-shadow: none;
+}
+
+.board-app-ink .board-schedule-icon {
+  background: var(--ink-white);
+  color: var(--ink-black);
+  border: 2.2px solid var(--ink-border);
+}
+
+.board-app-ink .board-schedule-reminder {
+  background: var(--ink-white);
+  color: var(--ink-mute);
+  border: 2px dashed var(--ink-mute);
+}
+
+.board-app-ink .board-schedule-reminder svg {
+  color: var(--ink-yellow);
+}
+
+.board-app-ink .board-schedule-badge {
+  background: var(--ink-white);
+  color: var(--ink-red);
+  border: 2.5px solid var(--ink-red);
+}
+
+.board-app-ink .board-schedule-empty {
+  border-color: var(--ink-mute);
+  color: var(--ink-mute);
+  background: var(--ink-white);
+}
+
+.board-app-ink .board-weather-stat {
+  background: var(--ink-white);
+  border: 2.2px solid var(--ink-border);
+  padding: clamp(4px, 0.9vmin, 8px) clamp(3px, 0.7vmin, 4px);
+}
+
+.board-app-ink .board-weather-stat-icon {
+  color: var(--ink-blue);
+}
+
+.board-app-ink .board-weather-stat-label {
+  color: var(--ink-mute);
+}
+
+.board-app-ink .board-weather-stat-value {
+  color: var(--ink-black);
+  font-size: clamp(11px, 1.7vmin, 15px);
+  letter-spacing: 0;
+}
+
+.board-app-ink .board-weather-range {
+  color: var(--ink-mute);
+}
+
+.board-app-ink .board-forecast {
+  border-top: 2px dashed var(--ink-mute);
+}
+
+.board-app-ink .board-memo-dot {
+  background: var(--ink-green);
+  box-shadow: 0 0 0 3px rgba(26, 127, 60, 0.15);
+}
+
+.board-app-ink .board-memo-item {
+  background: var(--ink-white);
+  border: 2.2px solid var(--ink-border);
+}
+
+.board-app-ink .board-memo-item-overdue {
+  border-color: var(--ink-red);
+  background: var(--ink-white);
+}
+
+.board-app-ink .board-memo-item-overdue .board-memo-dot {
+  background: var(--ink-red);
+  box-shadow: 0 0 0 3px rgba(192, 39, 45, 0.15);
+}
+
+/* 墨水屏:纯白底 + 描边胶囊,依靠图标区分类型 */
+.board-app-ink .board-memo-chip {
+  background: transparent;
+  color: var(--ink-black);
+  border: 1.4px solid var(--ink-border);
+}
+
+.board-app-ink .board-memo-chip em {
+  border-left-color: var(--ink-mute);
+}
+
+.board-app-ink .board-empty {
+  color: var(--ink-mute);
+}
+
+/* 关掉预热天气骨架动画,墨水屏刷新不宜有 shimmer */
+.board-app-ink .board-skeleton {
+  animation: none;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(0, 0, 0, 0.06) 0 4px,
+    transparent 4px 8px
+  );
+}
+
+/* =====================================================
+   看板 · 无参数禁止访问
+   ===================================================== */
+
+.board-forbidden {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #f6f8fc;
+  color: #1e293b;
+}
+
+.board-forbidden-inner {
+  max-width: 480px;
+  width: 100%;
+  padding: 32px 28px;
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 20px 40px -25px rgba(15, 23, 42, 0.18);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.board-forbidden-inner svg {
+  color: #4c6ef5;
+}
+
+.board-forbidden-inner h1 {
+  margin: 4px 0 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: 0.4px;
+}
+
+.board-forbidden-inner p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.board-forbidden-inner code {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #eef3ff;
+  color: #4c6ef5;
+  font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  font-size: 12.5px;
+}
+
+.board-forbidden-input {
+  margin-top: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(15, 23, 42, 0.14);
+  background: #fff;
+  font-size: 15px;
+  color: #1e293b;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+  box-sizing: border-box;
+  text-align: center;
+  letter-spacing: 0.4px;
+}
+
+.board-forbidden-input:focus {
+  border-color: #4c6ef5;
+  box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.16);
+}
+
+.board-forbidden-input-error {
+  border-color: #d94a7b;
+  box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.14);
+}
+
+.board-forbidden-error {
+  color: #d94a7b;
+  font-size: 12.5px;
+  letter-spacing: 0.2px;
+  margin-top: -4px;
+}
+
+.board-forbidden-btn {
+  margin-top: 4px;
+  padding: 10px 22px;
+  border-radius: 12px;
+  background: #4c6ef5;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.board-forbidden-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -12px rgba(76, 110, 245, 0.55);
+}
+
+.board-forbidden-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.board-forbidden-secondary {
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: #64748b;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+}
+
+.board-forbidden-secondary:hover {
+  color: #4c6ef5;
+}
+
+/* 天气取数失败:标出占位数据(生产静态部署下 /api/nmc 代理不存在) */
+.board-weather-stale-tip {
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  background: rgba(242, 183, 27, 0.16);
+  border: 1px solid rgba(242, 183, 27, 0.4);
+  color: #8a6300;
+  font-size: clamp(10px, 1.5vmin, 13px);
+  letter-spacing: 0.2px;
+  text-align: center;
+}
+
+.board-weather-stale .board-weather-main {
+  opacity: 0.5;
+}
+
+/* 墨水屏风格:去掉黄色底,用描边表达 */
+.board-app-ink .board-weather-stale-tip {
+  background: none;
+  border: 1.5px solid #000;
+  color: #000;
+}

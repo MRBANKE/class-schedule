@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#4c6ef5" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="课程表" />
+    <meta name="description" content="小学 1.2 班课程表 + 西安天气 + 备忘录" />
+    <!-- Open Graph:微信/QQ 内置浏览器读这几个标签来生成图文卡片。
+         这里是占位默认值,服务端(server/index.mjs injectPageHead)会按 ?id= 改写成
+         对应学生的标题/描述/头像和当前页绝对地址。og:image / og:url 必须是绝对 URL,
+         服务端注入时补全域名。 -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="课程表 · 家校助手" />
+    <meta property="og:title" content="课程表 · 家校助手" />
+    <meta property="og:description" content="小学课程表 + 天气 + 备忘录" />
+    <meta property="og:image" content="/entrance-icon.png" />
+    <meta property="og:url" content="/" />
+    <title>课程表 · 家校助手</title>
+    <script>
+      /* ============ "添加到主屏幕"保留完整地址 ============
+         快捷方式的启动地址取自 manifest.start_url,而不是你当前看的那个网址。
+         静态 manifest 的 start_url 固定是 "/",所以快捷方式打开就丢了 ?id=xxx。
+
+         真正起决定作用的是服务端:server/index.mjs 在发 HTML 时,就把本次请求的
+         pathname+search 写进上面那个 manifest link 的 ?start= 里,markup 从一开始
+         就是对的 —— 那个 link 排在这段脚本前面,浏览器解析到它那一刻就把地址取走了,
+         纯靠 JS 事后改往往已经晚了。必须用真实同源 URL 而不是 data:/blob:,后者
+         系统级添加流程解析不到正确基地址。
+
+         下面这段脚本只做增量补充:SPA 内部切路由(pushState / hashchange)时地址栏
+         变了但没有新的 HTML 请求,这里把新地址同步进去。
+         注意 hash 本身不可靠 —— iOS 记的是页面加载那一刻的 manifest,不会因 JS 改动
+         重读,所以 hash 保不住。因此看板用的是真实路径 /board(服务端看得见)而不是
+         #board;#today 这类丢了也无所谓,前端默认就是它。 */
+      (function () {
+        function currentPath() {
+          var loc = window.location;
+          return (loc.pathname || '/') + (loc.search || '') + (loc.hash || '');
+        }
+        function sync() {
+          try {
+            var href =
+              '/manifest.webmanifest?start=' + encodeURIComponent(currentPath());
+            var old = document.querySelector('link[rel="manifest"]');
+            // 已经是目标值就别动:避免每次路由变化都白白重取一遍 manifest
+            if (old && old.getAttribute('href') === href) return;
+            /* 换掉整个 <link> 节点,而不是改它的 href 属性:部分浏览器只在 manifest
+               链接被插入文档时才重新解析,光改 href 不触发重读。删旧 + 插新更稳。 */
+            var link = document.createElement('link');
+            link.setAttribute('rel', 'manifest');
+            link.setAttribute('href', href);
+            var head = document.head || document.getElementsByTagName('head')[0];
+            if (old && old.parentNode) old.parentNode.removeChild(old);
+            head.appendChild(link);
+          } catch (e) {
+            /* 出错退回服务端注入的那份(参数已经是对的,只是没有 hash),不阻断页面 */
+          }
+        }
+        sync();
+        // 页内标签(#today / #memo / #schedule)和浏览器前进后退
+        window.addEventListener('hashchange', sync);
+        window.addEventListener('popstate', sync);
+        // SPA 用 pushState/replaceState 切路由(如 /admin、/board、/superadmin)不触发上面的事件,
+        // 包一层让这两种跳转也同步 manifest
+        ['pushState', 'replaceState'].forEach(function (m) {
+          var orig = history[m];
+          if (typeof orig !== 'function') return;
+          history[m] = function () {
+            var r = orig.apply(this, arguments);
+            try {
+              sync();
+            } catch (e) {
+              /* ignore */
+            }
+            return r;
+          };
+        });
+        /* 兜底:分享面板通常在页面 visibilitychange / 重新聚焦前后打开,再同步一次,
+           确保用户点"添加到主屏幕"的那一刻链接就是当前页地址 */
+        window.addEventListener('visibilitychange', sync);
+        window.addEventListener('pageshow', sync);
+        /* 暴露给应用代码复用(src/App.tsx 切换学生后会调一次),
+           保证"当前页地址 -> manifest 链接"这套逻辑全项目只有这一份实现 */
+        window.__syncManifest = sync;
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

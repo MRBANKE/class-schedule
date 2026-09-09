@@ -1,0 +1,20 @@
+{
+  "name": "课程表 · 家校助手",
+  "short_name": "课程表",
+  "description": "小学课程表 + 天气 + 备忘录",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f6f8fc",
+  "theme_color": "#4c6ef5",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
