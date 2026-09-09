@@ -1,0 +1,18 @@
+node_modules
+dist
+# 本地 .npmrc 可能配了私有源等敏感信息,不带进镜像;
+# 镜像源统一用 --build-arg NPM_REGISTRY= 显式指定
+.npmrc
+# 只排除根部的服务端数据目录,别用裸 data —— 那会连 src/data/(课表/科目默认数据源)
+# 一起排掉,导致镜像里构建时 Could not resolve './data/schedule'。前导 / 锚定到构建上下文根
+/data
+/.data
+.git
+.gitignore
+*.log
+.DS_Store
+.vscode
+.idea
+Dockerfile
+docker-compose.yml
+README.md
