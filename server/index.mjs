@@ -232,17 +232,15 @@ const resolveTitle = async (urlPath, search) => {
 /* --------------------------- 分享描述解析 --------------------------- */
 /**
  * 微信/QQ 卡片的描述(og:description)。优先用后台为该学生填的 shareDescription;
- * 没填就按标题自动生成一句,始终有个像样的兜底,不至于是空的或通用占位。
+ * 没填就统一走默认文案。
  */
-const DEFAULT_SHARE_DESC = '小学课程表 · 天气 · 备忘录';
+const DEFAULT_SHARE_DESC = '每日课表 · 天气提醒';
 
 const resolveDescription = async (search) => {
   const id = studentIdFrom(search);
   if (!id) return DEFAULT_SHARE_DESC;
   const desc = (await store.studentDescriptions()).get(id) || '';
-  if (desc) return desc;
-  const title = (await store.studentTitles()).get(id) || '';
-  return title ? `${title} · 今日课程与备忘` : DEFAULT_SHARE_DESC;
+  return desc || DEFAULT_SHARE_DESC;
 };
 
 /* --------------------------- 主屏图标解析 --------------------------- */
@@ -321,7 +319,7 @@ const buildManifest = (startUrl, title, icon) => {
     // 两个都给成页面标题,快捷方式名称才和标题一致
     name: title,
     short_name: title,
-    description: '小学课程表 + 天气 + 备忘录',
+    description: '每日课表 · 天气提醒',
     start_url: startUrl,
     scope: '/',
     display: 'standalone',
