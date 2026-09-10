@@ -252,18 +252,18 @@ const resolveDescription = async (search) => {
  * 为什么要在服务端注入,而不能只靠 App.tsx 里那次 useEffect 改 apple-touch-icon:
  * 跟标题、manifest 是同一个时序问题 —— "添加到主屏幕"的预览图标取自页面加载那一刻
  * markup 里的 apple-touch-icon,JS 事后再改,预览往往已经抓走了旧值(markup 里写死的
- * 是 /icon.svg,更早访问过时 iOS 还会显示它缓存下来的上一张图,于是预览停在旧的 04 默认图)。
+ * 是 /entrance-icon.png,更早访问过时 iOS 还会显示它缓存下来的上一张图,于是预览停在旧图)。
  * 服务端把当前学生的图标直接写进 markup,预览从第一个字节起就是对的。
  *
  * 图标形态有两种:
- * - 站内路径(/avatars/xx.jpg,预设或默认):直接用。换预设时路径变,URL 一变
- *   iOS 的图标缓存自然失效,预览会跟着更新。
- * - 上传的 base64 data URI:不塞进 markup/manifest(体积大,且 iOS/安卓对 data: 图标
- *   支持都不稳),改指向 /api/icon?id=&v=<配置版本> 由服务端解码返回;带上版本号,
+ * - 站内路径(/avatars/xx.jpg,预设或默认;或 /api/avatar/xxx.jpg 用户上传):直接用。
+ *   换预设时路径变,URL 一变 iOS 的图标缓存自然失效,预览会跟着更新。
+ * - 上传的 base64 data URI(老配置遗留):不塞进 markup/manifest(体积大,且 iOS/安卓对 data:
+ *   图标支持都不稳),改指向 /api/icon?id=&v=<配置版本> 由服务端解码返回;带上版本号,
  *   换图标后 URL 变、iOS 才肯重新拉,不再显示缓存里的旧图。
- * 没有学生或没设图标时回退 /icon.svg。
+ * 没有学生或没设图标时回退 /entrance-icon.png(应用入口图,和 index.html 里的 icon 一致)。
  */
-const ICON_FALLBACK = { href: '/icon.svg', type: 'image/svg+xml', maskable: true };
+const ICON_FALLBACK = { href: '/entrance-icon.png', type: 'image/png', maskable: false };
 
 const mimeFromPath = (p) => {
   const s = p.toLowerCase();
@@ -305,20 +305,17 @@ const escapeHtml = (s) =>
     .replace(/"/g, '&quot;');
 
 const buildManifest = (startUrl, title, icon) => {
-  const icons = [];
-  // 学生自定义图标作为主图标。不标 maskable —— 头像被裁成圆形/方圆会切到脸;
-  // maskable 的兜底交给下面的 SVG。
-  if (icon && icon.href !== ICON_FALLBACK.href) {
-    icons.push({
-      src: icon.href,
-      sizes: 'any',
-      ...(icon.type ? { type: icon.type } : {}),
-      purpose: 'any',
-    });
-  }
-  // 始终保留 SVG:它既是没设图标时的默认,也是可 maskable 的兜底,
-  // 安卓的可安装性不受用户上传图标格式/尺寸影响。
-  icons.push({ src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' });
+  // 单一图标:有学生自定义头像就用头像,否则用应用入口图 entrance-icon.png。
+  // 不标 maskable —— 头像(照片)被裁圆或圆角会切到脸/关键内容;entrance-icon 也是完整
+  // 位图,不适合系统裁切遮罩。安卓拿到的 PWA 图标仍能正常显示,只是不做自适应遮罩。
+  const iconEntry = icon && icon.href !== ICON_FALLBACK.href
+    ? {
+        src: icon.href,
+        sizes: 'any',
+        ...(icon.type ? { type: icon.type } : {}),
+        purpose: 'any',
+      }
+    : { src: '/entrance-icon.png', sizes: 'any', type: 'image/png', purpose: 'any' };
   return JSON.stringify({
     // 安卓"添加到主屏幕"的图标名称取 short_name(没有才退回 name),
     // 两个都给成页面标题,快捷方式名称才和标题一致
@@ -332,7 +329,7 @@ const buildManifest = (startUrl, title, icon) => {
     background_color: '#f6f8fc',
     theme_color: '#4c6ef5',
     lang: 'zh-CN',
-    icons,
+    icons: [iconEntry],
   });
 };
 
@@ -367,10 +364,9 @@ const DESC_META_RE = /<meta\b[^>]*\bname=["']?description["']?[^>]*>/i;
 
 /**
  * 卡片配图。学生有头像(站内路径或走 /api/icon 的上传图)就用头像;没有则回退到
- * 位图入口图 —— 默认图标是 SVG,微信卡片不认矢量图,给张 PNG 才显示得出来。
+ * 应用入口图 entrance-icon.png(也是 ICON_FALLBACK.href),两条分支现在返回值一致。
  */
-const shareImageHref = (icon) =>
-  icon.href === ICON_FALLBACK.href ? '/entrance-icon.png' : icon.href;
+const shareImageHref = (icon) => icon.href;
 
 const setAttr = (tag, name, value) =>
   new RegExp(`\\b${name}=`, 'i').test(tag)
@@ -443,7 +439,7 @@ const handleApi = async (req, res, url) => {
     const m = /^data:([^;,]*)(;base64)?,([\s\S]*)$/i.exec(raw);
     if (!m) {
       // 不是 data URI(站内路径 / 没设 / 没这个学生):重定向到该图标或默认图
-      const dest = raw && /^\/[A-Za-z0-9][\w\-./]*$/.test(raw) ? raw : '/icon.svg';
+      const dest = raw && /^\/[A-Za-z0-9][\w\-./]*$/.test(raw) ? raw : '/entrance-icon.png';
       res.writeHead(302, { Location: dest, 'Cache-Control': 'no-store' });
       res.end();
       return true;
@@ -459,7 +455,7 @@ const handleApi = async (req, res, url) => {
       bytes = null;
     }
     if (!bytes || bytes.length === 0) {
-      res.writeHead(302, { Location: '/icon.svg', 'Cache-Control': 'no-store' });
+      res.writeHead(302, { Location: '/entrance-icon.png', 'Cache-Control': 'no-store' });
       res.end();
       return true;
     }
