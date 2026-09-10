@@ -11,10 +11,10 @@
   "lang": "zh-CN",
   "icons": [
     {
-      "src": "/icon.svg",
+      "src": "/entrance-icon.png",
       "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
