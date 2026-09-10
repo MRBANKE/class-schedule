@@ -55,6 +55,8 @@ jobs:
         with:
           context: .
           # 覆盖大多数场景:x86_64 服务器 + ARM(树莓派/M1/M2 Mac)
+          # arm64 通过 QEMU 模拟构建极慢且 npm ci 会撞 illegal instruction,
+          # 先只发 amd64。要 arm64 时用 ubuntu-24.04-arm 原生 runner 拆两个 job。
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
