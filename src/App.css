@@ -17,10 +17,10 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 4px;
   padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-top: 1px solid rgba(15, 23, 42, 0.06);
+  /* 不透明纯白背景;去掉 backdrop-filter blur 的毛玻璃效果。
+     用户 / 家长后台 / 超管三个页面共用这个 class,一次改全都改 */
+  background: #ffffff;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
   z-index: 60;
   box-shadow: 0 -8px 24px -16px rgba(15, 23, 42, 0.18);
 }
