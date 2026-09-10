@@ -1,6 +1,6 @@
 # 课程表 · 家校助手
 
-小学课程表 + 天气 + 备忘 + 展示看板的一体化应用。前端 React + Vite,后端是一个**零依赖**的 Node HTTP 服务(只用 `node:` 内置模块,没有一个 npm 运行时依赖),所有数据都保存在容器挂载的本地目录里 —— 换手机、换浏览器、清缓存都还是同一份数据。
+课程表 + 天气 + 备忘 + 展示看板的一体化应用。前端 React + Vite,后端是一个**零依赖**的 Node HTTP 服务(只用 `node:` 内置模块,没有一个 npm 运行时依赖),所有数据都保存在容器挂载的本地目录里 —— 换手机、换浏览器、清缓存都还是同一份数据。
 
 <div align="center">
   <img src="public/entrance-icon.png" alt="课程表" width="120">
@@ -167,4 +167,4 @@ src/api/
 
 ## License
 
-[MIT](LICENSE) © 2026 MRBANKE
+[MIT](LICENSE) © 2026 MRBANK
