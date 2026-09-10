@@ -1,7 +1,7 @@
-const CACHE_NAME = 'class-schedule-v7';
+const CACHE_NAME = 'class-schedule-v8';
 // manifest 故意不预缓存:它现在按当前页地址动态生成(start_url 带 ?id= 等参数),
 // 缓存住任何一份都会让"添加到主屏幕"拿到别的页面的参数,或退回没有参数的主页
-const APP_SHELL = ['/', '/index.html', '/icon.svg'];
+const APP_SHELL = ['/', '/index.html', '/entrance-icon.png'];
 
 self.addEventListener('install', event => {
   event.waitUntil(
